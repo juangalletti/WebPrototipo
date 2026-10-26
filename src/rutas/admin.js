@@ -1,6 +1,6 @@
 // Apartado admin: login, control del contador, registro, estadisticas, salud, auditoria y usuarios.
 import { Router } from 'express';
-import { query, leerConfig, auditar, ZONA } from '../db.js';
+import { query, auditar, ZONA } from '../db.js';
 import {
   hashear, verificarPassword, crearCookieSesion, borrarCookieSesion, requiereAdmin,
   loginBloqueado, registrarFallo, limpiarFallos,
@@ -141,25 +141,6 @@ rutasAdmin.get('/estadisticas', requiereAdmin, async (req, res) => {
   const rango = await leerRango(req, res);
   if (!rango) return;
   res.json(await estadisticasRango(rango.desde, rango.hasta));
-});
-
-// ---------------------------------------------------------------------
-// Configuracion: aforo maximo y porcentaje de aviso
-// ---------------------------------------------------------------------
-rutasAdmin.get('/config', requiereAdmin, async (req, res) => res.json(await leerConfig()));
-
-rutasAdmin.put('/config', requiereAdmin, async (req, res) => {
-  const { aforoMax, avisoPct } = req.body || {};
-  if (!Number.isInteger(aforoMax) || aforoMax < 0 || aforoMax > 10000) {
-    return res.status(400).json({ error: 'Aforo invalido (0 = sin limite)' });
-  }
-  if (!Number.isInteger(avisoPct) || avisoPct < 1 || avisoPct > 100) {
-    return res.status(400).json({ error: 'El porcentaje de aviso tiene que estar entre 1 y 100' });
-  }
-  await query(`UPDATE config SET valor = $1 WHERE clave = 'aforo_max'`, [String(aforoMax)]);
-  await query(`UPDATE config SET valor = $1 WHERE clave = 'aviso_pct'`, [String(avisoPct)]);
-  await auditar(req.usuario, 'cambiar_config', `aforo ${aforoMax}, aviso ${avisoPct}%`);
-  res.json({ aforoMax, avisoPct });
 });
 
 // ---------------------------------------------------------------------

@@ -86,23 +86,10 @@ const ESQUEMA = [
      hash    TEXT NOT NULL,
      creado  TIMESTAMPTZ NOT NULL DEFAULT now()
    )`,
-
-  `CREATE TABLE IF NOT EXISTS config (
-     clave TEXT PRIMARY KEY,
-     valor TEXT NOT NULL
-   )`,
-  `INSERT INTO config (clave, valor) VALUES ('aforo_max', '0'), ('aviso_pct', '80')
-     ON CONFLICT (clave) DO NOTHING`,
 ];
 
 export async function iniciarBase() {
   for (const sentencia of ESQUEMA) await query(sentencia);
-}
-
-export async function leerConfig() {
-  const filas = await query('SELECT clave, valor FROM config');
-  const c = Object.fromEntries(filas.map((f) => [f.clave, f.valor]));
-  return { aforoMax: parseInt(c.aforo_max, 10) || 0, avisoPct: parseInt(c.aviso_pct, 10) || 80 };
 }
 
 export function auditar(usuario, accion, detalle = null) {

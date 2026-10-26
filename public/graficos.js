@@ -58,8 +58,8 @@ function graficoBarras(cont, opciones) {
     } else {
       const alto = v === 0 ? 2 : Math.max(4, Math.round((v / maximo) * altoUtil));
       const color = i === resaltar
-        ? 'bg-indigo-600 dark:bg-indigo-400'
-        : 'bg-indigo-300 group-hover:bg-indigo-400 dark:bg-indigo-400/45 dark:group-hover:bg-indigo-400/70';
+        ? 'bg-marca-600 dark:bg-marca-400'
+        : 'bg-marca-300 group-hover:bg-marca-400 dark:bg-marca-400/45 dark:group-hover:bg-marca-400/70';
       barra.className = `${ancho} rounded-t transition-colors ${v === 0 ? 'bg-slate-200 dark:bg-slate-700' : color}`;
       barra.style.height = alto + 'px';
 
@@ -89,7 +89,7 @@ function graficoBarras(cont, opciones) {
     if (etiquetas[i]) {
       const texto = document.createElement('span');
       texto.className = `absolute left-1/2 -translate-x-1/2 text-[11px] tabular-nums whitespace-nowrap ${
-        i === resaltar ? 'font-semibold text-indigo-600 dark:text-indigo-400' : 'text-slate-400 dark:text-slate-500'}`;
+        i === resaltar ? 'font-semibold text-marca-600 dark:text-marca-400' : 'text-slate-400 dark:text-slate-500'}`;
       texto.textContent = etiquetas[i];
       et.append(texto);
     }

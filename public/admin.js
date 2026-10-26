@@ -148,7 +148,7 @@ const CARGAR = {
   sistema: cargarSalud, auditoria: () => cargarAuditoria(1), usuarios: cargarUsuarios,
 };
 const PESTANA_BASE = 'whitespace-nowrap rounded-lg px-3.5 py-2 text-sm font-medium transition';
-const PESTANA_ACTIVA = `${PESTANA_BASE} bg-white text-indigo-700 shadow-sm dark:bg-slate-900 dark:text-indigo-300`;
+const PESTANA_ACTIVA = `${PESTANA_BASE} bg-white text-marca-700 shadow-sm dark:bg-slate-900 dark:text-marca-300`;
 const PESTANA_INACTIVA = `${PESTANA_BASE} text-white/80 hover:bg-white/10 hover:text-white cursor-pointer`;
 
 function abrirPestana(nombre) {
@@ -171,8 +171,6 @@ document.querySelectorAll('nav [role=tab]').forEach((b) => {
 // ---------------------------------------------------------------------
 // Control
 // ---------------------------------------------------------------------
-let aforoCargado = false;
-
 function setPastilla(el, ok, textoOk, textoMal) {
   el.className = ok ? 'pastilla-ok' : 'pastilla-mal';
   el.textContent = ok ? `● ${textoOk}` : `✕ ${textoMal}`;
@@ -187,12 +185,6 @@ async function cargarControl() {
     setPastilla($('cCentral'), estado.centralEnLinea, 'En línea', 'Fuera de línea');
     $('cCentralDetalle').textContent = `Último dato ${haceCuanto(estado.ultimoContactoSeg)}`;
     setPastilla($('cSensor'), estado.sensorConectado, 'Conectado', 'Sin señal');
-
-    if (!aforoCargado) {
-      $('formAforo').aforoMax.value = estado.aforoMax;
-      $('formAforo').avisoPct.value = estado.avisoPct;
-      aforoCargado = true;
-    }
 
     llenarTabla($('tablaComandos'), comandos.map((c) => fila(
       celda('#' + c.id, 'tabular-nums text-slate-400'),
@@ -229,17 +221,6 @@ $('btnFijar').addEventListener('click', () => {
   }
   if (!confirm(`¿Fijar el contador de personas actuales en ${valor}?`)) return;
   enviarComando({ tipo: 'fijar', valor }, `fijar en ${valor}`);
-});
-
-$('formAforo').addEventListener('submit', async (ev) => {
-  ev.preventDefault();
-  const f = ev.target;
-  try {
-    await api('PUT', '/api/admin/config', { aforoMax: Number(f.aforoMax.value), avisoPct: Number(f.avisoPct.value) });
-    mensaje('msgAforo', 'Aforo guardado.');
-  } catch (err) {
-    mensaje('msgAforo', err.message, 'error');
-  }
 });
 
 // ---------------------------------------------------------------------

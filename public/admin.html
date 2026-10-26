@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Admin Control de Acceso</title>
+<title>Admin · Potenciar</title>
+<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -11,16 +12,16 @@
 </head>
 <body class="min-h-screen font-sans">
 
-<div class="absolute inset-x-0 top-0 -z-10 h-72 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-500 dark:from-indigo-950 dark:via-indigo-900 dark:to-violet-950"></div>
+<div class="absolute inset-x-0 top-0 -z-10 h-80 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] bg-gradient-to-br from-marca-700 via-marca-600 to-celeste-600 dark:from-marca-950 dark:via-marca-900 dark:to-celeste-950"></div>
 
 <!-- ===================== Login ===================== -->
-<main id="vistaLogin" hidden class="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4 py-10">
+<main id="vistaLogin" hidden class="mx-auto flex max-w-sm flex-col px-4 pt-10 pb-10">
   <div class="mb-6 text-center text-white">
-    <div class="mx-auto grid size-12 place-items-center rounded-xl bg-white/15 ring-1 ring-white/25 backdrop-blur">
-      <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+    <div class="mx-auto grid size-16 place-items-center rounded-2xl bg-white p-2 shadow-sm ring-1 ring-white/40">
+      <img src="/logo-potenciar.png" alt="Logo de Potenciar Educación Superior" class="size-full" width="192" height="192">
     </div>
     <h1 class="mt-4 text-xl font-semibold">Acceso administrador</h1>
-    <p class="text-sm text-indigo-100">Sistema de Control de Acceso</p>
+    <p class="text-sm text-marca-100">Potenciar Educación Superior · Control de Acceso</p>
   </div>
   <form id="formLogin" class="tarjeta flex flex-col gap-4 p-6">
     <label class="campo">Usuario <input class="entrada" name="usuario" autocomplete="username" required></label>
@@ -28,16 +29,21 @@
     <button class="boton-primario mt-1 w-full" type="submit">Ingresar</button>
     <p class="mensaje error" id="msgLogin" role="alert"></p>
   </form>
-  <a class="mt-5 text-center text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400" href="/">&larr; Volver al dashboard</a>
+  <a class="mt-5 text-center text-sm font-medium text-marca-600 hover:text-marca-500 dark:text-marca-400" href="/">&larr; Volver al dashboard</a>
 </main>
 
 <!-- ===================== Panel ===================== -->
 <div id="vistaAdmin" hidden>
   <header class="mx-auto max-w-6xl px-4 pt-8 text-white sm:px-6">
     <div class="flex flex-wrap items-center justify-between gap-4">
-      <div>
-        <h1 class="text-lg font-semibold">Panel de administración</h1>
-        <p class="text-sm text-indigo-100">Sistema de Control de Acceso · <a href="/" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">ver dashboard</a></p>
+      <div class="flex items-center gap-3">
+        <div class="grid size-12 shrink-0 place-items-center rounded-xl bg-white p-1 shadow-sm ring-1 ring-white/40">
+          <img src="/logo-potenciar.png" alt="Logo de Potenciar Educación Superior" class="size-full" width="192" height="192">
+        </div>
+        <div>
+          <h1 class="text-lg font-semibold">Panel de administración</h1>
+          <p class="text-sm text-marca-100">Potenciar Educación Superior · <a href="/" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">ver dashboard</a></p>
+        </div>
       </div>
       <div class="flex items-center gap-3">
         <div class="flex items-center gap-2 text-sm">
@@ -68,8 +74,7 @@
         <div class="tarjeta p-5"><div class="etiqueta-dato">Sensor del pasillo</div><div class="mt-2"><span id="cSensor" class="pastilla-neutra">--</span></div></div>
       </div>
 
-      <div class="grid gap-4 lg:grid-cols-2">
-        <div class="tarjeta p-6">
+      <div class="tarjeta p-6">
           <h2 class="titulo-tarjeta">Corregir el contador</h2>
           <p class="mt-1 subtitulo">El ESP32 aplica la orden en su próximo envío (unos segundos). Si no se conecta en 5 minutos, la orden vence.</p>
           <div class="mt-4 flex flex-wrap items-end gap-3">
@@ -79,17 +84,6 @@
             <button class="boton" id="btnFijar">Aplicar</button>
           </div>
           <p class="mensaje mt-3" id="msgControl" role="status"></p>
-        </div>
-        <div class="tarjeta p-6">
-          <h2 class="titulo-tarjeta">Aforo</h2>
-          <p class="mt-1 subtitulo">0 = sin límite. El dashboard avisa en ámbar al llegar al porcentaje y en rojo al completarse.</p>
-          <form class="mt-4 flex flex-wrap items-end gap-3" id="formAforo">
-            <label class="campo">Aforo máximo <input class="entrada w-28" type="number" name="aforoMax" min="0" max="10000" step="1" required></label>
-            <label class="campo">Avisar al % <input class="entrada w-24" type="number" name="avisoPct" min="1" max="100" step="1" required></label>
-            <button class="boton" type="submit">Guardar</button>
-          </form>
-          <p class="mensaje mt-3" id="msgAforo" role="status"></p>
-        </div>
       </div>
 
       <div class="tarjeta overflow-hidden">

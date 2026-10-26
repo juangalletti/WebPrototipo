@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Control de Acceso</title>
-<meta name="description" content="Ocupacion en tiempo real del pasillo - Potenciar Educacion Superior">
+<title>Control de Acceso · Potenciar</title>
+<meta name="description" content="Ocupacion en tiempo real del edificio - Potenciar Educacion Superior">
+<link rel="icon" type="image/png" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
@@ -13,16 +14,16 @@
 <body class="min-h-screen font-sans">
 
 <!-- Franja de color detras de la cabecera -->
-<div class="absolute inset-x-0 top-0 -z-10 h-80 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-500 dark:from-indigo-950 dark:via-indigo-900 dark:to-violet-950"></div>
+<div class="absolute inset-x-0 top-0 -z-10 h-80 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] bg-gradient-to-br from-marca-700 via-marca-600 to-celeste-600 dark:from-marca-950 dark:via-marca-900 dark:to-celeste-950"></div>
 
 <header class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 pt-8 text-white sm:px-6">
   <div class="flex items-center gap-3">
-    <div class="grid size-11 place-items-center rounded-xl bg-white/15 ring-1 ring-white/25 backdrop-blur">
-      <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+    <div class="grid size-14 shrink-0 place-items-center rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-white/40">
+      <img src="/logo-potenciar.png" alt="Logo de Potenciar Educación Superior" class="size-full" width="192" height="192">
     </div>
     <div>
-      <h1 class="text-lg font-semibold leading-tight">Sistema de Control de Acceso</h1>
-      <p class="text-sm text-indigo-100">Potenciar Educación Superior · Práctica Profesionalizante 2 - ASI</p>
+      <h1 class="text-xl font-bold leading-tight">Potenciar Educación Superior</h1>
+      <p class="text-sm text-marca-100">Sistema de Control de Acceso</p>
     </div>
   </div>
   <div id="estadoVivo" class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium ring-1 ring-white/25 backdrop-blur">
@@ -33,26 +34,13 @@
 
 <main class="mx-auto mt-8 max-w-6xl px-4 pb-10 sm:px-6">
 
-  <!-- Aviso de aforo (solo si hay aforo configurado y se alcanza el porcentaje de aviso) -->
-  <div id="avisoAforo" hidden class="mb-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-sm ring-1" role="status">
-    <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
-    <span id="avisoAforoTexto"></span>
-  </div>
-
   <div class="grid gap-4 lg:grid-cols-3">
 
     <!-- Ocupacion actual -->
     <section class="tarjeta flex flex-col p-6 lg:row-span-2">
-      <h2 class="titulo-tarjeta">Personas en el pasillo ahora</h2>
+      <h2 class="titulo-tarjeta">Personas en el edificio</h2>
       <div class="flex flex-1 flex-col items-center justify-center py-8">
-        <div id="personasActuales" class="text-8xl font-bold tabular-nums tracking-tighter transition-colors">--</div>
-        <div id="nivelAforo" class="mt-3" hidden></div>
-        <div id="aforo" class="mt-5 w-full max-w-xs" hidden>
-          <div class="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-            <div id="aforoRelleno" class="h-full w-0 rounded-full transition-all duration-500"></div>
-          </div>
-          <p id="aforoTexto" class="mt-2 text-center text-xs text-slate-500 tabular-nums dark:text-slate-400"></p>
-        </div>
+        <div id="personasActuales" class="text-8xl font-bold tabular-nums tracking-tighter text-marca-700 dark:text-marca-300">--</div>
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-800/50">
@@ -142,7 +130,7 @@
 
   <footer class="mt-8 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
     <span>Barreras infrarrojas + nRF24L01 + ESP32 · se actualiza cada 2 segundos</span>
-    <a href="/admin" class="inline-flex items-center gap-1.5 font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+    <a href="/admin" class="inline-flex items-center gap-1.5 font-medium text-marca-600 hover:text-marca-500 dark:text-marca-400">
       <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
       Acceso administrador
     </a>
