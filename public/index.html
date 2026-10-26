@@ -91,7 +91,7 @@
       <div id="graficoSemana" class="mt-5 h-40" role="img" aria-label="Maximo de personas por dia de la semana"></div>
     </section>
 
-    <!-- Maximo historico + estado -->
+    <!-- Maximo historico + clima -->
     <section class="flex flex-col gap-4 lg:col-span-1">
       <div class="tarjeta flex items-center gap-4 p-5">
         <div class="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:ring-amber-900">
@@ -103,18 +103,39 @@
         </div>
       </div>
       <div class="tarjeta flex-1 p-5">
-        <h2 class="titulo-tarjeta">Estado del sistema</h2>
-        <ul class="mt-3 space-y-3 text-sm">
-          <li class="flex items-center justify-between gap-3">
-            <span class="text-slate-600 dark:text-slate-300">Nodo central (ESP32)</span>
-            <span id="estadoCentral" class="pastilla-neutra">…</span>
-          </li>
-          <li class="flex items-center justify-between gap-3">
-            <span class="text-slate-600 dark:text-slate-300">Sensor del pasillo</span>
-            <span id="estadoSensor" class="pastilla-neutra">…</span>
-          </li>
-        </ul>
-        <p id="ultimoDato" class="mt-3 subtitulo"></p>
+        <div class="flex items-baseline justify-between gap-2">
+          <h2 class="titulo-tarjeta">Clima en Neuquén</h2>
+          <span id="climaHora" class="subtitulo"></span>
+        </div>
+        <div id="clima" hidden>
+          <div class="mt-3 flex items-center gap-4">
+            <span id="climaIcono" class="text-5xl leading-none" aria-hidden="true"></span>
+            <div>
+              <div class="text-4xl font-semibold tabular-nums tracking-tight"><span id="climaTemp"></span>°</div>
+              <div id="climaDescripcion" class="text-sm text-slate-600 dark:text-slate-300"></div>
+            </div>
+            <div class="ml-auto text-right text-xs tabular-nums text-slate-500 dark:text-slate-400">
+              <div>Máx <span id="climaMax" class="font-medium text-slate-700 dark:text-slate-200"></span>°</div>
+              <div>Mín <span id="climaMin" class="font-medium text-slate-700 dark:text-slate-200"></span>°</div>
+            </div>
+          </div>
+          <dl class="mt-4 grid grid-cols-3 gap-2 text-center">
+            <div class="rounded-xl bg-slate-50 px-2 py-2.5 dark:bg-slate-800/50">
+              <dt class="etiqueta-dato">Sensación</dt>
+              <dd class="mt-0.5 text-sm font-semibold tabular-nums"><span id="climaSensacion"></span>°</dd>
+            </div>
+            <div class="rounded-xl bg-slate-50 px-2 py-2.5 dark:bg-slate-800/50">
+              <dt class="etiqueta-dato">Viento</dt>
+              <dd id="climaViento" class="mt-0.5 text-sm font-semibold tabular-nums"></dd>
+              <dd id="climaRafagas" class="text-[11px] text-slate-500 tabular-nums dark:text-slate-400"></dd>
+            </div>
+            <div class="rounded-xl bg-slate-50 px-2 py-2.5 dark:bg-slate-800/50">
+              <dt class="etiqueta-dato">Humedad</dt>
+              <dd class="mt-0.5 text-sm font-semibold tabular-nums"><span id="climaHumedad"></span>%</dd>
+            </div>
+          </dl>
+        </div>
+        <p id="climaError" class="py-6 text-center text-sm text-slate-400" hidden>Clima no disponible por el momento.</p>
       </div>
     </section>
   </div>

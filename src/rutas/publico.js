@@ -3,6 +3,7 @@ import { Router } from 'express';
 import { query, leerConfig } from '../db.js';
 import { infoConexion } from '../estado.js';
 import { ocupacionPorHoraHoy } from '../estadisticas.js';
+import { obtenerClima } from '../clima.js';
 
 export const rutasPublicas = Router();
 
@@ -25,4 +26,10 @@ rutasPublicas.get('/estado', async (req, res) => {
     aforoMax, avisoPct,
     ocupacionPorHora: await ocupacionPorHoraHoy(),
   });
+});
+
+rutasPublicas.get('/clima', async (req, res) => {
+  const clima = await obtenerClima();
+  if (!clima) return res.status(503).json({ error: 'Clima no disponible' });
+  res.json(clima);
 });

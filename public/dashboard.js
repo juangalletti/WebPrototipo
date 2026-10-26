@@ -98,22 +98,42 @@ async function actualizar() {
     }
 
     setVivo(d.centralEnLinea ? 'ok' : 'mal');
-    pastilla($('estadoCentral'), d.centralEnLinea ? 'pastilla-ok' : 'pastilla-mal',
-      d.centralEnLinea ? `${ICONO_OK} En línea` : `${ICONO_MAL} Fuera de línea`);
-    pastilla($('estadoSensor'), d.sensorConectado ? 'pastilla-ok' : 'pastilla-mal',
-      d.sensorConectado ? `${ICONO_OK} Conectado` : `${ICONO_MAL} Sin señal`);
-    $('ultimoDato').textContent = d.hayDatos
+    $('estadoVivo').title = d.hayDatos
       ? `Último dato del ESP32: ${haceCuanto(d.ultimoContactoSeg)}`
       : 'El ESP32 todavía no envió datos.';
     renderAforo(d.personasActuales, d.aforoMax, d.avisoPct);
   } catch (err) {
     setVivo('mal');
     $('vivoTexto').textContent = 'Sin conexión';
-    pastilla($('estadoCentral'), 'pastilla-neutra', 'Sin datos');
-    pastilla($('estadoSensor'), 'pastilla-neutra', 'Sin datos');
-    $('ultimoDato').textContent = 'No se pudo contactar al servidor.';
+  }
+}
+
+// El clima cambia despacio y el servidor lo guarda 10 min: alcanza con pedirlo cada 5 min
+async function actualizarClima() {
+  try {
+    const res = await fetch('/api/clima');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const c = await res.json();
+    $('climaIcono').textContent = c.icono;
+    $('climaTemp').textContent = c.temperatura;
+    $('climaDescripcion').textContent = c.descripcion;
+    $('climaMax').textContent = c.maxima;
+    $('climaMin').textContent = c.minima;
+    $('climaSensacion').textContent = c.sensacion;
+    $('climaViento').textContent = `${c.viento} km/h ${c.direccionViento}`;
+    $('climaRafagas').textContent = `ráfagas ${c.rafagas}`;
+    $('climaHumedad').textContent = c.humedad;
+    $('climaHora').textContent = `Actualizado ${c.medido.slice(11, 16)} h`;
+    $('clima').hidden = false;
+    $('climaError').hidden = true;
+  } catch (err) {
+    $('clima').hidden = true;
+    $('climaError').hidden = false;
+    $('climaHora').textContent = '';
   }
 }
 
 actualizar();
 setInterval(actualizar, 2000);
+actualizarClima();
+setInterval(actualizarClima, 5 * 60 * 1000);
