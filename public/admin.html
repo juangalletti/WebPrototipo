@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Control de Acceso</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body class="min-h-screen font-sans">
+
+<div class="absolute inset-x-0 top-0 -z-10 h-72 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-500 dark:from-indigo-950 dark:via-indigo-900 dark:to-violet-950"></div>
+
+<!-- ===================== Login ===================== -->
+<main id="vistaLogin" hidden class="mx-auto flex min-h-screen max-w-sm flex-col justify-center px-4 py-10">
+  <div class="mb-6 text-center text-white">
+    <div class="mx-auto grid size-12 place-items-center rounded-xl bg-white/15 ring-1 ring-white/25 backdrop-blur">
+      <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+    </div>
+    <h1 class="mt-4 text-xl font-semibold">Acceso administrador</h1>
+    <p class="text-sm text-indigo-100">Sistema de Control de Acceso</p>
+  </div>
+  <form id="formLogin" class="tarjeta flex flex-col gap-4 p-6">
+    <label class="campo">Usuario <input class="entrada" name="usuario" autocomplete="username" required></label>
+    <label class="campo">Contraseña <input class="entrada" name="password" type="password" autocomplete="current-password" required></label>
+    <button class="boton-primario mt-1 w-full" type="submit">Ingresar</button>
+    <p class="mensaje error" id="msgLogin" role="alert"></p>
+  </form>
+  <a class="mt-5 text-center text-sm font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400" href="/">&larr; Volver al dashboard</a>
+</main>
+
+<!-- ===================== Panel ===================== -->
+<div id="vistaAdmin" hidden>
+  <header class="mx-auto max-w-6xl px-4 pt-8 text-white sm:px-6">
+    <div class="flex flex-wrap items-center justify-between gap-4">
+      <div>
+        <h1 class="text-lg font-semibold">Panel de administración</h1>
+        <p class="text-sm text-indigo-100">Sistema de Control de Acceso · <a href="/" class="underline decoration-white/40 underline-offset-2 hover:decoration-white">ver dashboard</a></p>
+      </div>
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 text-sm">
+          <span id="inicialUsuario" class="grid size-8 place-items-center rounded-full bg-white/20 font-semibold uppercase ring-1 ring-white/30"></span>
+          <span id="nombreUsuario" class="font-medium"></span>
+        </div>
+        <button id="btnLogout" class="rounded-lg bg-white/15 px-3 py-1.5 text-sm font-medium ring-1 ring-white/30 hover:bg-white/25">Salir</button>
+      </div>
+    </div>
+    <nav class="mt-6 flex gap-1 overflow-x-auto pb-1" role="tablist" aria-label="Secciones">
+      <button role="tab" data-panel="control">Control</button>
+      <button role="tab" data-panel="registro">Registro</button>
+      <button role="tab" data-panel="estadisticas">Estadísticas</button>
+      <button role="tab" data-panel="sistema">Salud del sistema</button>
+      <button role="tab" data-panel="auditoria">Auditoría</button>
+      <button role="tab" data-panel="usuarios">Usuarios</button>
+    </nav>
+  </header>
+
+  <main class="mx-auto mt-6 max-w-6xl px-4 pb-12 sm:px-6">
+
+    <!-- Control -->
+    <section class="space-y-4" id="panel-control">
+      <div class="grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div class="tarjeta p-5"><div class="etiqueta-dato">Personas actuales</div><div class="valor-dato" id="cPersonas">--</div></div>
+        <div class="tarjeta p-5"><div class="etiqueta-dato">Entradas / salidas hoy</div><div class="valor-dato" id="cEntSal">--</div></div>
+        <div class="tarjeta p-5"><div class="etiqueta-dato">Nodo central</div><div class="mt-2"><span id="cCentral" class="pastilla-neutra">--</span></div><div class="mt-1.5 subtitulo" id="cCentralDetalle"></div></div>
+        <div class="tarjeta p-5"><div class="etiqueta-dato">Sensor del pasillo</div><div class="mt-2"><span id="cSensor" class="pastilla-neutra">--</span></div></div>
+      </div>
+
+      <div class="grid gap-4 lg:grid-cols-2">
+        <div class="tarjeta p-6">
+          <h2 class="titulo-tarjeta">Corregir el contador</h2>
+          <p class="mt-1 subtitulo">El ESP32 aplica la orden en su próximo envío (unos segundos). Si no se conecta en 5 minutos, la orden vence.</p>
+          <div class="mt-4 flex flex-wrap items-end gap-3">
+            <button class="boton-peligro" id="btnReset">Reiniciar a 0</button>
+            <span class="pb-2 text-xs text-slate-400">o</span>
+            <label class="campo">Fijar en <input class="entrada w-28" type="number" id="valorFijar" min="0" max="10000" step="1"></label>
+            <button class="boton" id="btnFijar">Aplicar</button>
+          </div>
+          <p class="mensaje mt-3" id="msgControl" role="status"></p>
+        </div>
+        <div class="tarjeta p-6">
+          <h2 class="titulo-tarjeta">Aforo</h2>
+          <p class="mt-1 subtitulo">0 = sin límite. El dashboard avisa en ámbar al llegar al porcentaje y en rojo al completarse.</p>
+          <form class="mt-4 flex flex-wrap items-end gap-3" id="formAforo">
+            <label class="campo">Aforo máximo <input class="entrada w-28" type="number" name="aforoMax" min="0" max="10000" step="1" required></label>
+            <label class="campo">Avisar al % <input class="entrada w-24" type="number" name="avisoPct" min="1" max="100" step="1" required></label>
+            <button class="boton" type="submit">Guardar</button>
+          </form>
+          <p class="mensaje mt-3" id="msgAforo" role="status"></p>
+        </div>
+      </div>
+
+      <div class="tarjeta overflow-hidden">
+        <div class="px-6 pt-5 pb-3"><h2 class="titulo-tarjeta">Últimas órdenes</h2></div>
+        <div class="overflow-x-auto"><table class="tabla">
+          <thead><tr><th>#</th><th>Orden</th><th>Usuario</th><th>Creada</th><th>Estado</th><th>Aplicada</th></tr></thead>
+          <tbody id="tablaComandos"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- Registro -->
+    <section class="space-y-4" id="panel-registro" hidden>
+      <form class="tarjeta flex flex-wrap items-end gap-3 p-5" id="formRegistro">
+        <label class="campo">Desde <input class="entrada" type="date" name="desde" required></label>
+        <label class="campo">Hasta <input class="entrada" type="date" name="hasta" required></label>
+        <label class="campo">Tipo
+          <select class="entrada" name="tipo">
+            <option value="">Todos</option><option value="entrada">Entrada</option><option value="salida">Salida</option>
+            <option value="reset">Reset</option><option value="correccion">Corrección</option>
+          </select>
+        </label>
+        <button class="boton-primario" type="submit">Buscar</button>
+        <a class="boton ml-auto" id="linkCsv" href="#">
+          <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3"/></svg>
+          Descargar CSV
+        </a>
+      </form>
+      <p class="mensaje" id="msgRegistro" role="status"></p>
+      <div class="tarjeta overflow-hidden">
+        <div class="overflow-x-auto"><table class="tabla">
+          <thead><tr><th>Fecha y hora</th><th>Evento</th><th class="text-right">Personas</th><th>Hora</th></tr></thead>
+          <tbody id="tablaEventos"></tbody>
+        </table></div>
+        <div class="flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 px-4 py-3 dark:border-slate-800" id="pagEventos"></div>
+      </div>
+    </section>
+
+    <!-- Estadisticas -->
+    <section class="space-y-4" id="panel-estadisticas" hidden>
+      <form class="tarjeta flex flex-wrap items-end gap-3 p-5" id="formEstadisticas">
+        <label class="campo">Desde <input class="entrada" type="date" name="desde" required></label>
+        <label class="campo">Hasta <input class="entrada" type="date" name="hasta" required></label>
+        <button class="boton-primario" type="submit">Calcular</button>
+        <div class="ml-auto flex gap-2">
+          <button class="boton" type="button" data-dias="7">7 días</button>
+          <button class="boton" type="button" data-dias="30">30 días</button>
+          <button class="boton" type="button" data-dias="90">90 días</button>
+        </div>
+      </form>
+      <p class="mensaje" id="msgEstadisticas" role="status"></p>
+      <div class="grid grid-cols-2 gap-4 lg:grid-cols-5">
+        <div class="tarjeta p-5"><div class="etiqueta-dato">Entradas</div><div class="valor-dato" id="eEntradas">--</div></div>
+        <div class="tarjeta p-5"><div class="etiqueta-dato">Salidas</div><div class="valor-dato" id="eSalidas">--</div></div>
+        <div class="tarjeta p-5"><div class="etiqueta-dato">Pico de ocupación</div><div class="valor-dato" id="ePico">--</div><div class="mt-0.5 subtitulo" id="ePicoCuando"></div></div>
+        <div class="tarjeta p-5"><div class="etiqueta-dato">Entradas por día activo</div><div class="valor-dato" id="ePromedio">--</div><div class="mt-0.5 subtitulo" id="eDias"></div></div>
+        <div class="tarjeta col-span-2 p-5 lg:col-span-1"><div class="etiqueta-dato">Resets / correcciones</div><div class="valor-dato" id="eAjustes">--</div></div>
+      </div>
+      <div class="tarjeta p-6">
+        <div class="flex items-baseline justify-between gap-2"><h2 class="titulo-tarjeta">Entradas por día</h2><span class="subtitulo">Pasá el mouse sobre una barra para ver el detalle</span></div>
+        <div class="mt-5 h-48" id="gSerie" role="img" aria-label="Entradas por dia en el rango elegido"></div>
+      </div>
+      <div class="grid gap-4 lg:grid-cols-2">
+        <div class="tarjeta p-6">
+          <h2 class="titulo-tarjeta">Promedio de entradas por día de la semana</h2>
+          <div class="mt-5 h-44" id="gSemana" role="img" aria-label="Promedio de entradas por dia de la semana"></div>
+        </div>
+        <div class="tarjeta p-6">
+          <h2 class="titulo-tarjeta">Horas pico</h2>
+          <p class="subtitulo">Total de entradas en cada hora del día</p>
+          <div class="mt-4 h-40" id="gHoras" role="img" aria-label="Entradas por hora del dia"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Salud del sistema -->
+    <section class="space-y-4" id="panel-sistema" hidden>
+      <div class="grid grid-cols-2 gap-4 lg:grid-cols-4" id="saludDatos"></div>
+      <div class="tarjeta overflow-hidden">
+        <div class="px-6 pt-5 pb-3"><h2 class="titulo-tarjeta">Historial de conexiones</h2></div>
+        <div class="overflow-x-auto"><table class="tabla">
+          <thead><tr><th>Fecha y hora</th><th>Evento</th><th>Detalle</th></tr></thead>
+          <tbody id="tablaConexiones"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+    <!-- Auditoria -->
+    <section class="space-y-4" id="panel-auditoria" hidden>
+      <div class="tarjeta overflow-hidden">
+        <div class="overflow-x-auto"><table class="tabla">
+          <thead><tr><th>Fecha y hora</th><th>Usuario</th><th>Acción</th><th>Detalle</th></tr></thead>
+          <tbody id="tablaAuditoria"></tbody>
+        </table></div>
+        <div class="flex flex-wrap items-center justify-end gap-3 border-t border-slate-100 px-4 py-3 dark:border-slate-800" id="pagAuditoria"></div>
+      </div>
+    </section>
+
+    <!-- Usuarios -->
+    <section class="grid gap-4 lg:grid-cols-2" id="panel-usuarios" hidden>
+      <div class="space-y-4">
+        <div class="tarjeta overflow-hidden">
+          <div class="px-6 pt-5 pb-3"><h2 class="titulo-tarjeta">Administradores</h2></div>
+          <table class="tabla">
+            <thead><tr><th>Usuario</th><th>Creado</th><th></th></tr></thead>
+            <tbody id="tablaUsuarios"></tbody>
+          </table>
+        </div>
+        <div class="tarjeta p-6">
+          <h2 class="titulo-tarjeta">Agregar administrador</h2>
+          <form class="mt-4 flex flex-wrap items-end gap-3" id="formUsuario">
+            <label class="campo">Usuario <input class="entrada" name="usuario" autocomplete="off" required></label>
+            <label class="campo">Contraseña <input class="entrada" name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+            <button class="boton-primario" type="submit">Agregar</button>
+          </form>
+          <p class="mensaje mt-3" id="msgUsuario" role="status"></p>
+        </div>
+      </div>
+      <div class="tarjeta h-fit p-6">
+        <h2 class="titulo-tarjeta">Cambiar mi contraseña</h2>
+        <form class="mt-4 flex max-w-xs flex-col gap-3" id="formPassword">
+          <label class="campo">Contraseña actual <input class="entrada" name="actual" type="password" autocomplete="current-password" required></label>
+          <label class="campo">Nueva (mínimo 8 caracteres) <input class="entrada" name="nueva" type="password" autocomplete="new-password" minlength="8" required></label>
+          <button class="boton-primario" type="submit">Cambiar contraseña</button>
+        </form>
+        <p class="mensaje mt-3" id="msgPassword" role="status"></p>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script src="/graficos.js"></script>
+<script src="/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+/* Fuente de estilos: Tailwind CSS v4. Se compila a public/app.css con `npm run css`
+   (o `npm run css:watch` mientras se edita). public/app.css se sube al repo ya compilado. */
+@import "tailwindcss" source(none);
+@source "../public/*.html";
+@source "../public/*.js";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+@layer base {
+  html { -webkit-font-smoothing: antialiased; }
+  body { @apply bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100; }
+  :focus-visible { @apply outline-2 outline-offset-2 outline-indigo-500; }
+  [hidden] { display: none !important; }
+}
+
+/* Bases reutilizables (en Tailwind v4, lo que se usa con @apply tiene que ser @utility) */
+@utility boton {
+  @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium
+         ring-1 ring-slate-300 bg-white text-slate-700 hover:bg-slate-50 transition
+         disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer
+         dark:bg-slate-800 dark:text-slate-200 dark:ring-slate-700 dark:hover:bg-slate-700;
+}
+@utility pastilla {
+  @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium;
+}
+
+@layer components {
+  .tarjeta {
+    @apply rounded-2xl bg-white ring-1 ring-slate-200/70 shadow-sm
+           dark:bg-slate-900 dark:ring-slate-800;
+  }
+  .titulo-tarjeta { @apply text-sm font-semibold text-slate-700 dark:text-slate-200; }
+  .subtitulo { @apply text-xs text-slate-500 dark:text-slate-400; }
+  .etiqueta-dato { @apply text-xs font-medium text-slate-500 dark:text-slate-400; }
+  .valor-dato { @apply mt-1 text-2xl font-semibold tabular-nums tracking-tight; }
+
+  .boton-primario {
+    @apply boton bg-indigo-600 text-white ring-indigo-600 hover:bg-indigo-500
+           dark:bg-indigo-500 dark:ring-indigo-500 dark:hover:bg-indigo-400 dark:text-white;
+  }
+  .boton-peligro {
+    @apply boton text-rose-600 ring-rose-200 hover:bg-rose-50
+           dark:text-rose-400 dark:ring-rose-900 dark:hover:bg-rose-950;
+  }
+
+  .campo { @apply flex flex-col gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-300; }
+  .entrada {
+    @apply rounded-lg bg-white px-3 py-2 text-sm text-slate-900 ring-1 ring-slate-300
+           focus:outline-none focus:ring-2 focus:ring-indigo-500
+           dark:bg-slate-950 dark:text-slate-100 dark:ring-slate-700 dark:[color-scheme:dark];
+  }
+
+  .tabla { @apply w-full text-left text-sm; }
+  .tabla th { @apply px-4 py-2.5 text-xs font-medium text-slate-500 bg-slate-50 whitespace-nowrap
+                     dark:bg-slate-800/60 dark:text-slate-400; }
+  .tabla td { @apply px-4 py-2.5 whitespace-nowrap border-t border-slate-100 dark:border-slate-800; }
+  .tabla tbody tr { @apply hover:bg-slate-50/70 dark:hover:bg-slate-800/40; }
+
+  /* Pastillas de estado: siempre con icono + texto, nunca solo color */
+  .pastilla-ok   { @apply pastilla bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-300 dark:ring-emerald-900; }
+  .pastilla-aviso { @apply pastilla bg-amber-50 text-amber-800 ring-1 ring-amber-200 dark:bg-amber-950/60 dark:text-amber-300 dark:ring-amber-900; }
+  .pastilla-mal   { @apply pastilla bg-rose-50 text-rose-700 ring-1 ring-rose-200 dark:bg-rose-950/60 dark:text-rose-300 dark:ring-rose-900; }
+  .pastilla-neutra { @apply pastilla bg-slate-100 text-slate-600 ring-1 ring-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:ring-slate-700; }
+  .pastilla-info  { @apply pastilla bg-indigo-50 text-indigo-700 ring-1 ring-indigo-200 dark:bg-indigo-950/60 dark:text-indigo-300 dark:ring-indigo-900; }
+
+  .mensaje { @apply text-sm; }
+  .mensaje:empty { @apply hidden; }
+  .mensaje.error { @apply text-rose-600 dark:text-rose-400; }
+  .mensaje.exito { @apply text-emerald-600 dark:text-emerald-400; }
+}

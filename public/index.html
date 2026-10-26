@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Control de Acceso</title>
+<meta name="description" content="Ocupacion en tiempo real del pasillo - Potenciar Educacion Superior">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/app.css">
+</head>
+<body class="min-h-screen font-sans">
+
+<!-- Franja de color detras de la cabecera -->
+<div class="absolute inset-x-0 top-0 -z-10 h-80 [mask-image:linear-gradient(to_bottom,black_55%,transparent)] bg-gradient-to-br from-indigo-600 via-indigo-500 to-violet-500 dark:from-indigo-950 dark:via-indigo-900 dark:to-violet-950"></div>
+
+<header class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 pt-8 text-white sm:px-6">
+  <div class="flex items-center gap-3">
+    <div class="grid size-11 place-items-center rounded-xl bg-white/15 ring-1 ring-white/25 backdrop-blur">
+      <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z"/></svg>
+    </div>
+    <div>
+      <h1 class="text-lg font-semibold leading-tight">Sistema de Control de Acceso</h1>
+      <p class="text-sm text-indigo-100">Potenciar Educación Superior · Práctica Profesionalizante 2 - ASI</p>
+    </div>
+  </div>
+  <div id="estadoVivo" class="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-sm font-medium ring-1 ring-white/25 backdrop-blur">
+    <span class="relative flex size-2.5"><span id="vivoPulso" class="absolute inline-flex size-full rounded-full bg-emerald-300 opacity-75"></span><span id="vivoPunto" class="relative inline-flex size-2.5 rounded-full bg-slate-300"></span></span>
+    <span id="vivoTexto">Conectando…</span>
+  </div>
+</header>
+
+<main class="mx-auto mt-8 max-w-6xl px-4 pb-10 sm:px-6">
+
+  <!-- Aviso de aforo (solo si hay aforo configurado y se alcanza el porcentaje de aviso) -->
+  <div id="avisoAforo" hidden class="mb-4 flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-medium shadow-sm ring-1" role="status">
+    <svg class="size-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"/></svg>
+    <span id="avisoAforoTexto"></span>
+  </div>
+
+  <div class="grid gap-4 lg:grid-cols-3">
+
+    <!-- Ocupacion actual -->
+    <section class="tarjeta flex flex-col p-6 lg:row-span-2">
+      <h2 class="titulo-tarjeta">Personas en el pasillo ahora</h2>
+      <div class="flex flex-1 flex-col items-center justify-center py-8">
+        <div id="personasActuales" class="text-8xl font-bold tabular-nums tracking-tighter transition-colors">--</div>
+        <div id="nivelAforo" class="mt-3" hidden></div>
+        <div id="aforo" class="mt-5 w-full max-w-xs" hidden>
+          <div class="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+            <div id="aforoRelleno" class="h-full w-0 rounded-full transition-all duration-500"></div>
+          </div>
+          <p id="aforoTexto" class="mt-2 text-center text-xs text-slate-500 tabular-nums dark:text-slate-400"></p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-800/50">
+          <div class="flex items-center gap-1.5 etiqueta-dato">
+            <svg class="size-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h12.75"/></svg>
+            Entradas hoy
+          </div>
+          <div id="entradas" class="valor-dato">--</div>
+        </div>
+        <div class="rounded-xl bg-slate-50 p-4 dark:bg-slate-800/50">
+          <div class="flex items-center gap-1.5 etiqueta-dato">
+            <svg class="size-4 text-slate-500 dark:text-slate-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"/></svg>
+            Salidas hoy
+          </div>
+          <div id="salidas" class="valor-dato">--</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ocupacion por hora -->
+    <section class="tarjeta p-6 lg:col-span-2">
+      <div class="flex items-baseline justify-between gap-2">
+        <h2 class="titulo-tarjeta">Ocupación por hora</h2>
+        <span class="subtitulo">Máximo de personas en cada hora de hoy</span>
+      </div>
+      <div id="graficoHoras" class="mt-5 h-44" role="img" aria-label="Ocupacion maxima por hora de hoy"></div>
+      <p id="sinDatosHoras" class="py-14 text-center text-sm text-slate-400" hidden>Todavía no hay datos del nodo central.</p>
+    </section>
+
+    <!-- Maximo por dia -->
+    <section class="tarjeta p-6 lg:col-span-1">
+      <div class="flex items-baseline justify-between gap-2">
+        <h2 class="titulo-tarjeta">Máximo por día</h2>
+        <span class="subtitulo">Esta semana</span>
+      </div>
+      <div id="graficoSemana" class="mt-5 h-40" role="img" aria-label="Maximo de personas por dia de la semana"></div>
+    </section>
+
+    <!-- Maximo historico + estado -->
+    <section class="flex flex-col gap-4 lg:col-span-1">
+      <div class="tarjeta flex items-center gap-4 p-5">
+        <div class="grid size-11 shrink-0 place-items-center rounded-xl bg-amber-50 text-amber-600 ring-1 ring-amber-200 dark:bg-amber-950/50 dark:text-amber-400 dark:ring-amber-900">
+          <svg class="size-6" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"/></svg>
+        </div>
+        <div>
+          <div class="etiqueta-dato">Máximo histórico</div>
+          <div class="text-2xl font-semibold tabular-nums"><span id="maxHistorico">--</span> <span class="text-sm font-normal text-slate-500 dark:text-slate-400">personas</span></div>
+        </div>
+      </div>
+      <div class="tarjeta flex-1 p-5">
+        <h2 class="titulo-tarjeta">Estado del sistema</h2>
+        <ul class="mt-3 space-y-3 text-sm">
+          <li class="flex items-center justify-between gap-3">
+            <span class="text-slate-600 dark:text-slate-300">Nodo central (ESP32)</span>
+            <span id="estadoCentral" class="pastilla-neutra">…</span>
+          </li>
+          <li class="flex items-center justify-between gap-3">
+            <span class="text-slate-600 dark:text-slate-300">Sensor del pasillo</span>
+            <span id="estadoSensor" class="pastilla-neutra">…</span>
+          </li>
+        </ul>
+        <p id="ultimoDato" class="mt-3 subtitulo"></p>
+      </div>
+    </section>
+  </div>
+
+  <footer class="mt-8 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-500 dark:text-slate-400">
+    <span>Barreras infrarrojas + nRF24L01 + ESP32 · se actualiza cada 2 segundos</span>
+    <a href="/admin" class="inline-flex items-center gap-1.5 font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400">
+      <svg class="size-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/></svg>
+      Acceso administrador
+    </a>
+  </footer>
+</main>
+
+<script src="/graficos.js"></script>
+<script src="/dashboard.js"></script>
+</body>
+</html>
