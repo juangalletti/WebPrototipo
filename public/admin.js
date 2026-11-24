@@ -339,6 +339,23 @@ function dato(titulo, valor, estado = null) {
 
 const siNo = (b, si, no) => [b ? si : no, b ? 'ok' : 'mal'];
 
+// Motivos de reinicio que manda el ESP32 central
+const MOTIVOS = {
+  encendido: ['Encendido (volvió la luz o se enchufó)', null],
+  pin_reset: ['Botón de reset', null],
+  software: ['Reinicio por software', null],
+  sin_sync: ['Automático (20 min sin sincronizar)', 'aviso'],
+  error_programa: ['Error del programa', 'mal'],
+  watchdog: ['Watchdog (el programa se colgó)', 'mal'],
+  caida_tension: ['Caída de tensión (revisar fuente)', 'mal'],
+  desconocido: ['Desconocido', 'aviso'],
+};
+const ESTADO_PASILLO = {
+  ok: ['Recibiendo', 'ok'],
+  con_fallas: ['Con fallas', 'aviso'],
+  sin_enlace: ['Sin enlace', 'mal'],
+};
+
 async function cargarSalud() {
   try {
     const s = await api('GET', '/api/admin/salud');
@@ -349,13 +366,31 @@ async function cargarSalud() {
     ];
     if (u) {
       const rssi = Number.isInteger(u.rssi) ? u.rssi : null;
+      // Firmwares viejos no mandan "conexion": si mandan "red" es que salieron por WiFi
+      const porCable = u.conexion === 'ethernet';
+      const tipo = porCable ? 'Cableada (LAN)' : (u.conexion === 'wifi' || u.red) ? 'Inalámbrica (WiFi)' : '—';
+      const [motivo, estadoMotivo] = MOTIVOS[u.motivoReinicio] || [u.motivoReinicio || 'sin dato', null];
+      const [pasillo, estadoPasillo] = u.rfPasillo
+        ? ESTADO_PASILLO[u.rfPasillo] || [u.rfPasillo, null]
+        : siNo(u.enlaceRF, 'Recibiendo', 'Sin señal');
+      const perdidos = Number.isInteger(u.descartadosNube) ? u.descartadosNube : null;
       datos.push(
+        dato('Último reinicio', motivo, estadoMotivo),
+        dato('Firmware', u.firmware || 'versión anterior (sin dato)'),
         dato('Módulo nRF24', ...siNo(u.radioOk, 'Detectado', 'No detectado')),
-        dato('Enlace con el pasillo', ...siNo(u.enlaceRF, 'Recibiendo', 'Sin señal')),
-        dato('Mensajes RF perdidos', String(u.perdidosRF ?? '—'), u.perdidosRF > 0 ? 'aviso' : null),
-        dato('Tarjeta SD', ...siNo(u.sdDisponible, 'Lista', 'No detectada')),
+        dato('Nodo del pasillo', pasillo, estadoPasillo),
+        dato('Envíos del pasillo sin confirmar', String(u.enviosSinAck ?? '—'), u.enviosSinAck > 0 ? 'aviso' : null),
+        dato('Pasillo reiniciado', u.pasilloReiniciado ? 'Sí, hace poco' : 'No', u.pasilloReiniciado ? 'aviso' : null),
+        dato('Lotes repetidos (desde el arranque)', String(u.lotesRepetidos ?? '—')),
+        dato('Último lote recibido', String(u.ultimoLoteAplicado ?? '—')),
+        dato('Eventos perdidos (cola llena)', perdidos === null ? '—' : String(perdidos), perdidos === null ? null : perdidos ? 'aviso' : 'ok'),
+        ...(u.sdInstalada === false ? [] : [dato('Tarjeta SD', ...siNo(u.sdDisponible, 'Lista', 'No detectada'))]),
         dato('Hora (NTP)', ...siNo(u.horaSincronizada, 'Sincronizada', 'Sin sincronizar')),
-        dato('Señal WiFi', rssi === null ? '—' : `${rssi} dBm`, rssi === null ? null : rssi > -67 ? 'ok' : rssi > -80 ? 'aviso' : 'mal'),
+        dato('Tipo de conexión', tipo),
+        dato('Red conectada', porCable ? 'Ethernet (cable)' : u.red || '—'),
+        porCable
+          ? dato('Señal WiFi', 'No se usa (por cable)')
+          : dato('Señal WiFi', rssi === null ? '—' : `${rssi} dBm`, rssi === null ? null : rssi > -67 ? 'ok' : rssi > -80 ? 'aviso' : 'mal'),
         dato('IP local del ESP32', u.ip || '—'),
         dato('Tiempo encendido', haceCuanto(Math.round((u.uptimeMs || 0) / 1000)).replace('hace ', '')),
       );

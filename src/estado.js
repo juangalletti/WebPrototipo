@@ -4,6 +4,18 @@ import { query } from './db.js';
 
 export const FUERA_DE_LINEA_MS = 30000;   // sin noticias del ESP32 durante este tiempo => fuera de linea
 
+// Motivos de reinicio que manda el ESP32 (leerMotivoReinicio en el firmware)
+export const MOTIVOS_REINICIO = {
+  encendido: 'encendido (se enchufó o volvió la luz)',
+  pin_reset: 'botón de reset',
+  software: 'reinicio por software',
+  sin_sync: 'reinicio automático (20 min sin sincronizar)',
+  error_programa: 'error del programa',
+  watchdog: 'watchdog (el programa se colgó)',
+  caida_tension: 'caída de tensión (la fuente no da suficiente corriente)',
+  desconocido: 'desconocido',
+};
+
 let ultimoContacto = null;   // Date del ultimo sync del ESP32
 let enLinea = false;
 let ultimoBootId = null;
@@ -26,11 +38,13 @@ export async function cargarEstadoConexion() {
 // Se llama en cada sync del ESP32.
 export async function contactoCentral(datos) {
   if (!enLinea) {
-    await registrar('central_en_linea', datos.ip ? `IP ${datos.ip}` : null);
+    const via = datos.conexion === 'ethernet' ? 'por cable' : datos.red ? `por WiFi ${datos.red}` : '';
+    await registrar('central_en_linea', datos.ip ? `IP ${datos.ip} ${via}`.trim() : null);
     enLinea = true;
   }
   if (ultimoBootId !== null && datos.bootId !== ultimoBootId) {
-    await registrar('central_reiniciado', `uptime ${Math.round(datos.uptimeMs / 1000)} s`);
+    const motivo = MOTIVOS_REINICIO[datos.motivoReinicio] || datos.motivoReinicio || 'motivo desconocido';
+    await registrar('central_reiniciado', `${motivo} · encendido hace ${Math.round(datos.uptimeMs / 1000)} s`);
   }
   if (ultimoEnlaceRF !== null && datos.enlaceRF !== ultimoEnlaceRF) {
     await registrar(datos.enlaceRF ? 'sensor_conectado' : 'sensor_sin_senal');
